@@ -31,7 +31,7 @@ const studentSchema = new Schema<TStudent>({
   dateOfBirth: { type: String, required: true },
   contactNumber: { type: String, required: true },
   emergencyContactNumber: { type: String, required: true },
-  email: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
   bloodGroup: {
     type: String,
     enum: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB'],
