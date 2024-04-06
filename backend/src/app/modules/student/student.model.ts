@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { TStudent } from './student.interface';
+import { TStudent, TStudentModel } from './student.interface';
 
 const nameSchema = new Schema({
   firstName: {
@@ -77,7 +77,7 @@ const localGuardianSchema = new Schema({
   },
 });
 
-const studentSchema = new Schema<TStudent>({
+const studentSchema = new Schema<TStudent, TStudentModel>({
   id: { type: String, unique: true, required: true, trim: true },
   name: {
     type: nameSchema,
@@ -148,4 +148,9 @@ const studentSchema = new Schema<TStudent>({
   },
 });
 
-export const Student = model<TStudent>('Student', studentSchema);
+studentSchema.statics.isStudentExists = async function (id: string) {
+  const existingStudent = await Student.findOne({ id });
+  return existingStudent;
+};
+
+export const Student = model<TStudent, TStudentModel>('Student', studentSchema);

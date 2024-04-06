@@ -1,3 +1,5 @@
+import { Model } from 'mongoose';
+
 export type TGuardian = {
   fatherName: string;
   fatherOccupation: string;
@@ -35,3 +37,8 @@ export type TStudent = {
   profileImage?: string;
   isActive: 'active' | 'blocked';
 };
+
+
+export interface TStudentModel extends Model<TStudent>{
+  isStudentExists(id: string): Promise<TStudent | null>;
+}
