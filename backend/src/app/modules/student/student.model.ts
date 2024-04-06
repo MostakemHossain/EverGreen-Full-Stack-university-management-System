@@ -113,7 +113,7 @@ const studentSchema = new Schema<TStudent>({
   },
   bloodGroup: {
     type: String,
-    enum: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB'],
+    enum: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'],
     message: '{VALUES} is not Valid',
     trim: true,
   },
