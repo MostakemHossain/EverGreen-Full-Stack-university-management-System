@@ -79,83 +79,94 @@ const localGuardianSchema = new Schema({
   },
 });
 
-const studentSchema = new Schema<TStudent, TStudentModel>({
-  id: { type: String, unique: true, required: true, trim: true },
-  password: {
-    type: String,
-    required: [true, 'Password is required'],
+const studentSchema = new Schema<TStudent, TStudentModel>(
+  {
+    id: { type: String, unique: true, required: true, trim: true },
+    password: {
+      type: String,
+      required: [true, 'Password is required'],
+    },
+    name: {
+      type: nameSchema,
+      required: [true, 'Student name is required'],
+    },
+    gender: {
+      type: String,
+      enum: ['Male', 'Female', 'Other'],
+      message: '{VALUES} is not Valid',
+      required: [true, 'Gender is required'],
+      trim: true,
+    },
+    dateOfBirth: {
+      type: String,
+      required: [true, 'Date of birth is required'],
+      trim: true,
+    },
+    contactNumber: {
+      type: String,
+      required: [true, 'Contact number is required'],
+      trim: true,
+    },
+    emergencyContactNumber: {
+      type: String,
+      required: [true, 'Emergency contact number is required'],
+      trim: true,
+    },
+    email: {
+      type: String,
+      required: [true, 'Email is required'],
+      unique: true,
+      trim: true,
+    },
+    bloodGroup: {
+      type: String,
+      enum: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'],
+      message: '{VALUES} is not Valid',
+      trim: true,
+    },
+    presentAddress: {
+      type: String,
+      required: [true, 'Present address is required'],
+      trim: true,
+    },
+    permanentAddress: {
+      type: String,
+      required: [true, 'Permanent address is required'],
+      trim: true,
+    },
+    guardian: {
+      type: guardianSchema,
+      required: [true, 'Guardian details are required'],
+    },
+    localGuardian: {
+      type: localGuardianSchema,
+      required: [true, 'Local guardian details are required'],
+    },
+    profileImage: {
+      type: String,
+      required: [true, 'Profile image is required'],
+      trim: true,
+    },
+    isActive: {
+      type: String,
+      enum: ['active', 'blocked'],
+      default: 'active',
+      trim: true,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
-  name: {
-    type: nameSchema,
-    required: [true, 'Student name is required'],
+  {
+    toJSON: {
+      virtuals: true,
+    },
   },
-  gender: {
-    type: String,
-    enum: ['Male', 'Female', 'Other'],
-    message: '{VALUES} is not Valid',
-    required: [true, 'Gender is required'],
-    trim: true,
-  },
-  dateOfBirth: {
-    type: String,
-    required: [true, 'Date of birth is required'],
-    trim: true,
-  },
-  contactNumber: {
-    type: String,
-    required: [true, 'Contact number is required'],
-    trim: true,
-  },
-  emergencyContactNumber: {
-    type: String,
-    required: [true, 'Emergency contact number is required'],
-    trim: true,
-  },
-  email: {
-    type: String,
-    required: [true, 'Email is required'],
-    unique: true,
-    trim: true,
-  },
-  bloodGroup: {
-    type: String,
-    enum: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'],
-    message: '{VALUES} is not Valid',
-    trim: true,
-  },
-  presentAddress: {
-    type: String,
-    required: [true, 'Present address is required'],
-    trim: true,
-  },
-  permanentAddress: {
-    type: String,
-    required: [true, 'Permanent address is required'],
-    trim: true,
-  },
-  guardian: {
-    type: guardianSchema,
-    required: [true, 'Guardian details are required'],
-  },
-  localGuardian: {
-    type: localGuardianSchema,
-    required: [true, 'Local guardian details are required'],
-  },
-  profileImage: {
-    type: String,
-    required: [true, 'Profile image is required'],
-    trim: true,
-  },
-  isActive: {
-    type: String,
-    enum: ['active', 'blocked'],
-    default: 'active',
-    trim: true,
-  },
-  isDeleted: {
-    type: Boolean,
-    default: false,
-  },
+);
+
+studentSchema.virtual('FullName').get(function () {
+  return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`;
 });
 
 studentSchema.pre('save', async function (next) {
