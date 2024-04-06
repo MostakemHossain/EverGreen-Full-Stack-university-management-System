@@ -152,6 +152,10 @@ const studentSchema = new Schema<TStudent, TStudentModel>({
     default: 'active',
     trim: true,
   },
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 studentSchema.pre('save', async function (next) {
@@ -163,6 +167,19 @@ studentSchema.pre('save', async function (next) {
 });
 studentSchema.post('save', async function (doc, next) {
   doc.password = '';
+  next();
+});
+
+studentSchema.pre('find', function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+studentSchema.pre('findOne', function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+studentSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
   next();
 });
 

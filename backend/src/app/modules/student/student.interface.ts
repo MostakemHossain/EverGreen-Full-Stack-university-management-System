@@ -37,9 +37,8 @@ export type TStudent = {
   localGuardian: TLocalGuardian;
   profileImage?: string;
   isActive: 'active' | 'blocked';
+  isDeleted: boolean;
 };
-
-
 
 export interface TStudentModel extends Model<TStudent> {
   isStudentExists(id: string): Promise<TStudent | null>;
