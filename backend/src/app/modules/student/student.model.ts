@@ -1,4 +1,6 @@
+import bcrypt from 'bcrypt';
 import { Schema, model } from 'mongoose';
+import config from '../../config';
 import { TStudent, TStudentModel } from './student.interface';
 
 const nameSchema = new Schema({
@@ -79,6 +81,10 @@ const localGuardianSchema = new Schema({
 
 const studentSchema = new Schema<TStudent, TStudentModel>({
   id: { type: String, unique: true, required: true, trim: true },
+  password: {
+    type: String,
+    required: [true, 'Password is required'],
+  },
   name: {
     type: nameSchema,
     required: [true, 'Student name is required'],
@@ -146,6 +152,18 @@ const studentSchema = new Schema<TStudent, TStudentModel>({
     default: 'active',
     trim: true,
   },
+});
+
+studentSchema.pre('save', async function (next) {
+  this.password = await bcrypt.hash(
+    this.password,
+    Number(config.bcrypt_salt_round),
+  );
+  next();
+});
+studentSchema.post('save', async function (doc, next) {
+  doc.password = '';
+  next();
 });
 
 studentSchema.statics.isStudentExists = async function (id: string) {
