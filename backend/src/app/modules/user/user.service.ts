@@ -1,8 +1,10 @@
 import config from '../../config';
+import { AcademicSemester } from '../AcademicSemester/academicSemester.model';
 import { TStudent } from '../student/student.interface';
 import { Student } from '../student/student.model';
 import { TUser } from './user.interface';
 import { User } from './user.model';
+import { generateStudentId } from './user.utils';
 
 const createStudentIntoDB = async (password: string, payload: TStudent) => {
   // create new user object
@@ -12,8 +14,17 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
   user.password = password || (config.default_password as string);
   // set role
   user.role = 'student';
-  // generated is
-  user.id = '2030100001';
+
+  // find academic semester
+  const admissionSemester = await AcademicSemester.findById(
+    payload.admissionSemester,
+  );
+  if (!admissionSemester) {
+    throw new Error('Admission semester not found');
+  }
+
+  // generated id
+  user.id = await generateStudentId(admissionSemester);
 
   // create a user
   const newUser = await User.create(user);
