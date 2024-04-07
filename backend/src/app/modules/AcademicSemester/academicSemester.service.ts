@@ -9,6 +9,46 @@ const createAcademicSemester = async (payload: TAcademicSemester) => {
   const result = await AcademicSemester.create(payload);
   return result;
 };
+
+const getAllAcademicSemester = async () => {
+  const result = await AcademicSemester.find();
+  return result;
+};
+const getSingleAcademicSemester = async (id: string) => {
+  const result = await AcademicSemester.findById(id);
+  return result;
+};
+
+const updateAcademicSemester = async (
+  id: string,
+  payload: Partial<TAcademicSemester>,
+) => {
+  if (
+    payload.code &&
+    payload.name &&
+    AcademicSemesterCodeMapper[payload.name] !== payload.code
+  ) {
+    throw new Error('Invalid semester Code');
+  }
+  const result = await AcademicSemester.findOneAndUpdate(
+    {
+      _id: id,
+    },
+    payload,
+    {
+      new: true,
+    },
+  );
+  return result;
+};
+const deleteAcademicSemester = async (id: string) => {
+  const result = await AcademicSemester.findByIdAndDelete(id);
+  return result;
+};
 export const academicSemesterService = {
   createAcademicSemester,
+  getAllAcademicSemester,
+  getSingleAcademicSemester,
+  updateAcademicSemester,
+  deleteAcademicSemester,
 };
