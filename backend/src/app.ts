@@ -1,6 +1,7 @@
 import cors from 'cors';
 import express from 'express';
 import globalErrorHandler from './app/middleware/globalErrorHandler';
+import notFound from './app/middleware/notFound';
 import { StudentRoutes } from './app/modules/student/student.route';
 import { UserRoutes } from './app/modules/user/user.routes';
 
@@ -18,6 +19,7 @@ app.get('/', (req, res) => {
   });
 });
 
+app.use(notFound);
 app.use(globalErrorHandler);
 
 export default app;
