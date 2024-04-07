@@ -6,3 +6,4 @@ export type TUser = {
   role: 'admin' | 'student' | 'faculty';
   isDeleted: boolean;
 };
+

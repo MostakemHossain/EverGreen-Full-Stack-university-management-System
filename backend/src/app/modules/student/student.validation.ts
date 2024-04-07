@@ -95,9 +95,6 @@ const createStudentValidationSchema = z.object({
     required_error: 'Id is required',
     invalid_type_error: 'Id must be string',
   }),
-  password: z.string({
-    required_error: 'password is required',
-  }),
   name: studentNameValidationSchema,
   gender: z.enum(['Male', 'Female', 'Other']),
   dateOfBirth: z
@@ -140,7 +137,6 @@ const createStudentValidationSchema = z.object({
   guardian: guardianValidationSchema,
   localGuardian: localGuardianValidationSchema,
   profileImage: z.string().optional(),
-  isActive: z.enum(['active', 'blocked']).default('active'),
   isDeleted: z.boolean().default(false),
 });
 

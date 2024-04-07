@@ -1,6 +1,4 @@
-import bcrypt from 'bcrypt';
 import { Schema, model } from 'mongoose';
-import config from '../../config';
 import { TStudent, TStudentModel } from './student.interface';
 
 const nameSchema = new Schema({
@@ -82,9 +80,11 @@ const localGuardianSchema = new Schema({
 const studentSchema = new Schema<TStudent, TStudentModel>(
   {
     id: { type: String, unique: true, required: true, trim: true },
-    password: {
-      type: String,
-      required: [true, 'Password is required'],
+    user: {
+      type: Schema.Types.ObjectId,
+      required: [true, 'user Id is required'],
+      unique: true,
+      ref: 'User ',
     },
     name: {
       type: nameSchema,
@@ -147,12 +147,6 @@ const studentSchema = new Schema<TStudent, TStudentModel>(
       required: [true, 'Profile image is required'],
       trim: true,
     },
-    isActive: {
-      type: String,
-      enum: ['active', 'blocked'],
-      default: 'active',
-      trim: true,
-    },
     isDeleted: {
       type: Boolean,
       default: false,
@@ -169,19 +163,6 @@ const studentSchema = new Schema<TStudent, TStudentModel>(
 studentSchema.virtual('FullName').get(function () {
   return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`;
 });
-
-studentSchema.pre('save', async function (next) {
-  this.password = await bcrypt.hash(
-    this.password,
-    Number(config.bcrypt_salt_round),
-  );
-  next();
-});
-studentSchema.post('save', async function (doc, next) {
-  doc.password = '';
-  next();
-});
-
 studentSchema.pre('find', function (next) {
   this.find({ isDeleted: { $ne: true } });
   next();
