@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from 'express';
+import httpStatus from 'http-status';
+import sendResponse from '../../utils/sendResponse';
 import { UserServices } from './user.service';
 
 const createStudent = async (
@@ -11,8 +13,9 @@ const createStudent = async (
     const { password, student } = req.body;
 
     const result = await UserServices.createStudentIntoDB(password, student);
-    res.status(201).json({
+    sendResponse(res, {
       success: true,
+      statusCode: httpStatus.OK,
       message: 'Student Create Succesfully',
       data: result,
     });
