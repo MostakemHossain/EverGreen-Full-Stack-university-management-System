@@ -5,6 +5,7 @@ import { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
 import config from '../config';
 import handleZodError from '../errors/HandleZodError';
+import handleValidationError from '../errors/handleValidationError';
 import { TErrorSource } from '../interface/error';
 
 const globalErrorHandler = (
@@ -24,12 +25,16 @@ const globalErrorHandler = (
   ];
 
   if (err instanceof ZodError) {
-    const simplifiedError= handleZodError(err);
-    statusCode=simplifiedError?.statusCode;
-    message=simplifiedError?.message;
-    errorSources=simplifiedError?.errorSources;
+    const simplifiedError = handleZodError(err);
+    statusCode = simplifiedError?.statusCode;
+    message = simplifiedError?.message;
+    errorSources = simplifiedError?.errorSources;
+  } else if (err?.name === 'ValidationError') {
+    const simplifiedError = handleValidationError(err);
+    statusCode = simplifiedError?.statusCode;
+    message = simplifiedError?.message;
+    errorSources = simplifiedError?.errorSources;
   }
-
   res.status(statusCode).json({
     success: false,
     message,
