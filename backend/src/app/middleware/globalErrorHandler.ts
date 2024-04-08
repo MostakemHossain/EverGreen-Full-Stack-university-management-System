@@ -2,6 +2,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, Request, Response } from 'express';
+import { ZodError } from 'zod';
+import config from '../config';
+import handleZodError from '../errors/HandleZodError';
+import { TErrorSource } from '../interface/error';
 
 const globalErrorHandler = (
   err: any,
@@ -9,12 +13,28 @@ const globalErrorHandler = (
   res: Response,
   next: NextFunction,
 ) => {
-  const statusCode = err.statusCode || 500;
-  const message = err.message || 'Something went wrong';
+  let statusCode = err.statusCode || 500;
+  let message = err.message || 'Something went wrong';
+
+  let errorSources: TErrorSource = [
+    {
+      path: '',
+      message: 'Something went wrong',
+    },
+  ];
+
+  if (err instanceof ZodError) {
+    const simplifiedError= handleZodError(err);
+    statusCode=simplifiedError?.statusCode;
+    message=simplifiedError?.message;
+    errorSources=simplifiedError?.errorSources;
+  }
+
   res.status(statusCode).json({
     success: false,
     message,
-    error: err,
+    errorSources,
+    stack: config.NODE_ENV === 'development' ? err?.stack : null,
   });
 };
 export default globalErrorHandler;
