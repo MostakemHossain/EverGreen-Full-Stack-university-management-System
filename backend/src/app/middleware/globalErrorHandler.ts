@@ -9,6 +9,7 @@ import handleCastError from '../errors/handleCastError';
 import handleDuplicateError from '../errors/handleDuplicateError';
 import handleValidationError from '../errors/handleValidationError';
 import { TErrorSource } from '../interface/error';
+import AppError from '../utils/AppError';
 
 const globalErrorHandler = (
   err: any,
@@ -16,8 +17,8 @@ const globalErrorHandler = (
   res: Response,
   next: NextFunction,
 ) => {
-  let statusCode = err.statusCode || 500;
-  let message = err.message || 'Something went wrong';
+  let statusCode = 500;
+  let message = 'Something went wrong';
 
   let errorSources: TErrorSource = [
     {
@@ -46,6 +47,23 @@ const globalErrorHandler = (
     statusCode = simplifiedError?.statusCode;
     message = simplifiedError?.message;
     errorSources = simplifiedError?.errorSources;
+  } else if (err instanceof AppError) {
+    statusCode = err?.statusCode;
+    message = err?.message;
+    errorSources = [
+      {
+        path: '',
+        message: err?.message,
+      },
+    ];
+  } else if (err instanceof Error) {
+    message = err?.message;
+    errorSources = [
+      {
+        path: '',
+        message: err?.message,
+      },
+    ];
   }
   res.status(statusCode).json({
     success: false,
