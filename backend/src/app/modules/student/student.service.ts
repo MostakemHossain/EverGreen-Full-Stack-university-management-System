@@ -63,13 +63,17 @@ const getAllStudentFromDb = async (query: Record<string, unknown>) => {
   //   const fieldQuery = await limitQuery.select(fields);
 
   //   return fieldQuery;
-  const studentQuery = new QueryBuilder(Student.find() .populate('admissionSemester')
-  .populate({
-    path: 'academicDepartment',
-    populate: {
-      path: 'academicFaculty',
-    },
-  }), query)
+  const studentQuery = new QueryBuilder(
+    Student.find()
+      .populate('admissionSemester')
+      .populate({
+        path: 'academicDepartment',
+        populate: {
+          path: 'academicFaculty',
+        },
+      }),
+    query,
+  )
     .search(studentSearchableFields)
     .paginate()
     .sort()
@@ -94,16 +98,17 @@ const deleteStudentFromDb = async (id: string) => {
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
-    const deletedStudent = await Student.findOneAndUpdate(
-      { id },
+    const deletedStudent = await Student.findByIdAndUpdate(
+       id ,
       { isDeleted: true },
       { new: true, session },
     );
     if (!deletedStudent) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to deleted Student');
     }
-    const deletedUser = await User.findOneAndUpdate(
-      { id },
+    const userId = deletedStudent.user;
+    const deletedUser = await User.findByIdAndUpdate(
+      userId,
       { isDeleted: true },
       { new: true, session },
     );
@@ -112,6 +117,7 @@ const deleteStudentFromDb = async (id: string) => {
     }
     await session.commitTransaction();
     await session.endSession();
+    return deletedStudent;
   } catch (err) {
     await session.abortTransaction();
     await session.endSession();
@@ -140,7 +146,7 @@ const updateStudentFromDB = async (id: string, payload: Partial<TStudent>) => {
       modifiedUpdatedData[`localGuardian.${key}`] = value;
     }
   }
-  const result = await Student.findOneAndUpdate({ id }, modifiedUpdatedData, {
+  const result = await Student.findByIdAndUpdate(id, modifiedUpdatedData, {
     new: true,
   });
   return result;

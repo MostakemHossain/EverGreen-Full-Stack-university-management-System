@@ -27,7 +27,7 @@ const getAllFacultyFromDB = async (query: Record<string, unknown>) => {
   return result;
 };
 const getSingleFacultyFromDB = async (id: string) => {
-  const result = await Faculty.findOne({ id });
+  const result = await Faculty.findById(id);
   return result;
 };
 
@@ -41,12 +41,7 @@ const updateFacultyIntoDB = async (id: string, payload: Partial<TFaculty>) => {
       modifiedUpdatedData[`name.${key}`] = value;
     }
   }
-  if (name && Object.keys(name).length) {
-    for (const [key, value] of Object.entries(name)) {
-      modifiedUpdatedData[`name.${key}`] = value;
-    }
-  }
-  const result = await Faculty.findOneAndUpdate({ id }, modifiedUpdatedData, {
+  const result = await Faculty.findByIdAndUpdate(id, modifiedUpdatedData, {
     new: true,
   });
   return result;
@@ -58,8 +53,8 @@ const deleteFaculty = async (id: string) => {
   try {
     session.startTransaction();
 
-    const deletedFaculty = await Faculty.findOneAndUpdate(
-      { id },
+    const deletedFaculty = await Faculty.findByIdAndUpdate(
+      id,
       { isDeleted: true },
       { new: true, session },
     );
@@ -69,9 +64,10 @@ const deleteFaculty = async (id: string) => {
     }
 
     // get user _id from deletedFaculty
+    const userId = deletedFaculty.user;
 
-    const deletedUser = await User.findOneAndUpdate(
-      { id },
+    const deletedUser = await User.findByIdAndUpdate(
+      userId,
       { isDeleted: true },
       { new: true, session },
     );
