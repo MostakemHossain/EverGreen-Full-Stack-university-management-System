@@ -1,8 +1,8 @@
+import httpStatus from 'http-status';
 import { Schema, model } from 'mongoose';
+import AppError from '../../utils/AppError';
 import { BloodGroup, Gender } from './faculty.constant';
 import { FacultyModel, TFaculty, TUserName } from './faculty.interface';
-import AppError from '../../utils/AppError';
-import httpStatus from 'http-status';
 
 const userNameSchema = new Schema<TUserName>({
   firstName: {
@@ -101,9 +101,9 @@ const facultySchema = new Schema<TFaculty, FacultyModel>(
 facultySchema.virtual('fullName').get(function () {
   return (
     this?.name?.firstName +
-    '' +
+    ' ' +
     this?.name?.middleName +
-    '' +
+    ' ' +
     this?.name?.lastName
   );
 });
@@ -127,7 +127,8 @@ facultySchema.pre('aggregate', function (next) {
 //checking if user is already exist!
 facultySchema.statics.isUserExists = async function (id: string) {
   const existingUser = await Faculty.findOne({ id });
-  if(existingUser) throw new AppError(httpStatus.BAD_REQUEST, 'Faculty Already Exists');
+  if (existingUser)
+    throw new AppError(httpStatus.BAD_REQUEST, 'Faculty Already Exists');
 };
 
 export const Faculty = model<TFaculty, FacultyModel>('Faculty', facultySchema);
