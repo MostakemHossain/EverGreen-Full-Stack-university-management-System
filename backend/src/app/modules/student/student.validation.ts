@@ -8,7 +8,7 @@ const createStudentNameValidationSchema = z.object({
     })
     .min(1)
     .max(20),
-  middleName: z.string().min(1),
+  middleName: z.string().min(1).optional(),
   lastName: z
     .string({
       required_error: 'Last name is required',

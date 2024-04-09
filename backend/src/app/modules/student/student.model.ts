@@ -170,7 +170,7 @@ const studentSchema = new Schema<TStudent, TStudentModel>(
 );
 
 studentSchema.virtual('FullName').get(function () {
-  return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`;
+  return `${this?.name?.firstName} ${this?.name?.middleName} ${this?.name?.lastName}`;
 });
 studentSchema.pre('find', function (next) {
   this.find({ isDeleted: { $ne: true } });
