@@ -13,7 +13,32 @@ const getAllFaculty = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const getSingleFaculty = catchAsync(async (req: Request, res: Response) => {
+  const result = await FacultyService.getSingleFacultyFromDB(
+    req.params.facultyId,
+  );
+  sendResponse(res, {
+    success: true,
+    message: 'Get faculty successfully',
+    statusCode: httpStatus.OK,
+    data: result,
+  });
+});
+const updateFaculty = catchAsync(async (req: Request, res: Response) => {
+  const result = await FacultyService.updateFacultyIntoDB(
+    req.params.facultyId,
+    req.body.faculty,
+  );
+  sendResponse(res, {
+    success: true,
+    message: 'Faculty is updated successfully',
+    statusCode: httpStatus.OK,
+    data: result,
+  });
+});
 
 export const FacultyController = {
   getAllFaculty,
+  getSingleFaculty,
+  updateFaculty
 };
