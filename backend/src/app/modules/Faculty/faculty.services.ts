@@ -1,4 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import httpStatus from 'http-status';
+import mongoose from 'mongoose';
 import QueryBuilder from '../../query/QueryBuilder';
+import AppError from '../../utils/AppError';
+import { User } from '../user/user.model';
 import { FacultySearchableFields } from './faculty.constant';
 import { TFaculty } from './faculty.interface';
 import { Faculty } from './faculty.model';
@@ -41,15 +46,54 @@ const updateFacultyIntoDB = async (id: string, payload: Partial<TFaculty>) => {
       modifiedUpdatedData[`name.${key}`] = value;
     }
   }
-  console.log(modifiedUpdatedData);
   const result = await Faculty.findOneAndUpdate({ id }, modifiedUpdatedData, {
     new: true,
   });
   return result;
 };
 
+const deleteFaculty = async (id: string) => {
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+
+    const deletedFaculty = await Faculty.findOneAndUpdate(
+      { id },
+      { isDeleted: true },
+      { new: true, session },
+    );
+
+    if (!deletedFaculty) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to delete faculty');
+    }
+
+    // get user _id from deletedFaculty
+
+    const deletedUser = await User.findOneAndUpdate(
+      { id },
+      { isDeleted: true },
+      { new: true, session },
+    );
+
+    if (!deletedUser) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to delete user');
+    }
+
+    await session.commitTransaction();
+    await session.endSession();
+
+    return deletedFaculty;
+  } catch (err: any) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw new Error(err);
+  }
+};
+
 export const FacultyService = {
   getAllFacultyFromDB,
   getSingleFacultyFromDB,
   updateFacultyIntoDB,
+  deleteFaculty,
 };
