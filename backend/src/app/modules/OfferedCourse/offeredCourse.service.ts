@@ -8,8 +8,18 @@ import { Course } from '../course/course.model';
 import { TOfferedCourse } from './offeredCourse.interface';
 import { OfferedCourse } from './offeredCourse.model';
 
-const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => { 
-
+const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
+  const {
+    academicFaculty,
+    academicDepartment,
+    semesterRegistration,
+    course,
+    section,
+    faculty,
+    days,
+    startTime,
+    endTime,
+  } = payload;
   //check if the semester registration id is exists
   const isSemesterRegistrationExists = await SemesterRegistration.findById(
     payload.semesterRegistration,
@@ -44,6 +54,60 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
       ' Academic Department is not Found',
     );
   }
+
+  // check if the depertment belongs to the faculty
+  const isDepartmentbelongToFaculty = await AcademicDepartment.findOne({
+    academicFaculty,
+    _id: academicDepartment,
+  });
+
+  if (!isDepartmentbelongToFaculty) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      `this ${isDepartmentExists.name} is not belong to ${isAcademicFacultyExists.name}`,
+    );
+  }
+
+  // if the same course same section already exists
+  const isSameOfferedCourseExistsWithSameRegistrationSemesterWithSameSection =
+    await OfferedCourse.findOne({
+      semesterRegistration,
+      course,
+      section,
+    });
+  if (isSameOfferedCourseExistsWithSameRegistrationSemesterWithSameSection) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `Offered course is same section is already exists`,
+    );
+  }
+
+  // get the schedules of offered course
+  const assignSchedules = await OfferedCourse.find({
+    semesterRegistration,
+    faculty,
+    days: { $in: days },
+  }).select('days startTime endTime')
+  const newSchedules = {
+    days,
+    startTime,
+    endTime,
+  };
+
+  assignSchedules.forEach((schedule) => {
+    const existingStartTime = new Date(`1970-01-01T${schedule.startTime}:00`);
+    const existingEndTime = new Date(`1970-01-01T${schedule.endTime}:00`);
+
+    const newStartTime = new Date(`1970-01-01T${newSchedules.startTime}:00`);
+    const newEndTime = new Date(`1970-01-01T${newSchedules.endTime}:00`);
+
+    if (newStartTime < existingEndTime && newEndTime > existingStartTime) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        `This faculty is not available at this time`,
+      );
+    }
+  });
 
   const academicSemester = isSemesterRegistrationExists.academicSemester;
 
