@@ -18,7 +18,37 @@ const createSemesterRegistration = catchAsync(
     });
   },
 );
+const getAllSemesterRegistration = catchAsync(
+  async (req: Request, res: Response) => {
+    const result =
+      await SemesterRegistrationService.getAllSemesterRegistrationFromDB(
+        req.query,
+      );
+    sendResponse(res, {
+      statusCode: httpStatus.CREATED,
+      success: true,
+      message: 'get All semester retrueved Successfully',
+      data: result,
+    });
+  },
+);
+const getSingleSemesterRegistration = catchAsync(
+  async (req: Request, res: Response) => {
+    const result =
+      await SemesterRegistrationService.getSingleSemesterRegistrationFromDB(
+        req.params.id,
+      );
+    sendResponse(res, {
+      statusCode: httpStatus.CREATED,
+      success: true,
+      message: 'get Single Semester registation Successfully',
+      data: result,
+    });
+  },
+);
 
 export const semesterRegistrationController = {
   createSemesterRegistration,
+  getSingleSemesterRegistration,
+  getAllSemesterRegistration,
 };

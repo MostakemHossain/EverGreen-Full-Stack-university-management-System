@@ -1,4 +1,5 @@
 import httpStatus from 'http-status';
+import QueryBuilder from '../../query/QueryBuilder';
 import AppError from '../../utils/AppError';
 import { AcademicSemester } from '../AcademicSemester/academicSemester.model';
 import { TSemesterRegistration } from './semesterRegistration.interface';
@@ -24,7 +25,28 @@ const createSemesterRegistrationIntoDB = async (
   const result = await SemesterRegistration.create(payload);
   return result;
 };
+const getAllSemesterRegistrationFromDB = async (
+  query: Record<string, unknown>,
+) => {
+  const semesterRegistrationQuery = new QueryBuilder(
+    SemesterRegistration.find().populate('academicSemester'),
+    query,
+  )
+    .fields()
+    .filter()
+    .sort()
+    .paginate();
+  const result = await semesterRegistrationQuery.modelQuery;
+  return result;
+};
+const getSingleSemesterRegistrationFromDB = async (id: string) => {
+  const result =
+    await SemesterRegistration.findById(id).populate('academicSemester');
+  return result;
+};
 
 export const SemesterRegistrationService = {
   createSemesterRegistrationIntoDB,
+  getSingleSemesterRegistrationFromDB,
+  getAllSemesterRegistrationFromDB,
 };
