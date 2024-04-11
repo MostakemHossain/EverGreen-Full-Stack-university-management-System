@@ -11,6 +11,6 @@ router.post(
 );
 router.get("/",OfferedCourseController.getAllOfferedCourse)
 router.get("/:id",OfferedCourseController.getSingleOfferedCourse)
-router.patch("/:id",OfferedCourseController.updateOfferedCourse)
+router.patch("/:id",validateRequest(OfferedCourseValidation.updateOfferedCourseValidationSchema),OfferedCourseController.updateOfferedCourse)
 
 export const OfferedCourseRoutes = router;
