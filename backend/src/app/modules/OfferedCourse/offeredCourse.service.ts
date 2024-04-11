@@ -7,6 +7,7 @@ import { SemesterRegistration } from '../SemesterRegistration/semesterRegistrati
 import { Course } from '../course/course.model';
 import { TOfferedCourse } from './offeredCourse.interface';
 import { OfferedCourse } from './offeredCourse.model';
+import { hasTimeConflict } from './offeredCourse.utils';
 
 const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   const {
@@ -87,27 +88,19 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
     semesterRegistration,
     faculty,
     days: { $in: days },
-  }).select('days startTime endTime')
+  }).select('days startTime endTime');
   const newSchedules = {
     days,
     startTime,
     endTime,
   };
 
-  assignSchedules.forEach((schedule) => {
-    const existingStartTime = new Date(`1970-01-01T${schedule.startTime}:00`);
-    const existingEndTime = new Date(`1970-01-01T${schedule.endTime}:00`);
-
-    const newStartTime = new Date(`1970-01-01T${newSchedules.startTime}:00`);
-    const newEndTime = new Date(`1970-01-01T${newSchedules.endTime}:00`);
-
-    if (newStartTime < existingEndTime && newEndTime > existingStartTime) {
-      throw new AppError(
-        httpStatus.BAD_REQUEST,
-        `This faculty is not available at this time`,
-      );
-    }
-  });
+  if (hasTimeConflict(assignSchedules, newSchedules)) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `This faculty is not available at this time`,
+    );
+  }
 
   const academicSemester = isSemesterRegistrationExists.academicSemester;
 
