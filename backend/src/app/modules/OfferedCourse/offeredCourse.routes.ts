@@ -9,5 +9,8 @@ router.post(
   validateRequest(OfferedCourseValidation.createOfferedCourseValidationSchema),
   OfferedCourseController.createOfferedCourse,
 );
+router.get("/",OfferedCourseController.getAllOfferedCourse)
+router.get("/:id",OfferedCourseController.getSingleOfferedCourse)
+router.patch("/:id",OfferedCourseController.updateOfferedCourse)
 
 export const OfferedCourseRoutes = router;
