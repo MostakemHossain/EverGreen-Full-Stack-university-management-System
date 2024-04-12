@@ -1,10 +1,11 @@
 import bcrypt from 'bcrypt';
 import httpStatus from 'http-status';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import { JwtPayload } from 'jsonwebtoken';
 import config from '../../config';
 import AppError from '../../utils/AppError';
 import { User } from '../user/user.model';
 import { TLoginUser } from './auth.interface';
+import { createToken } from './auth.utils';
 
 const loginUser = async (payload: TLoginUser) => {
   // check the user is exists
@@ -32,13 +33,24 @@ const loginUser = async (payload: TLoginUser) => {
     userId: isUserExists.id,
     role: isUserExists.role,
   };
-  const accessToken = jwt.sign(jwtPayload, config.jwt_access_serect as string, {
-    expiresIn: '10d',
-  });
+  //   const accessToken = jwt.sign(jwtPayload, config.jwt_access_serect as string, {
+  //     expiresIn: config.jwt_access_serect_expires_in,
+  //   });
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_serect as string,
+    config.jwt_access_serect_expires_in as string,
+  );
+  const refreshToken = createToken(
+    jwtPayload,
+    config.jwt_refresh_serect as string,
+    config.jwt_refresh_serect_expires_in as string,
+  );
 
   return {
     accessToken,
     needsPasswordChange: isUserExists?.needsPasswordChange,
+    refreshToken,
   };
 };
 
@@ -83,7 +95,7 @@ const changePassword = async (
     {
       password: hashedPassword,
       needsPasswordChange: false,
-      passwordChangeAt:new Date()
+      passwordChangeAt: new Date(),
     },
   ).select('-password');
   return result;
