@@ -99,7 +99,7 @@ const deleteStudentFromDb = async (id: string) => {
   try {
     session.startTransaction();
     const deletedStudent = await Student.findByIdAndUpdate(
-       id ,
+      id,
       { isDeleted: true },
       { new: true, session },
     );

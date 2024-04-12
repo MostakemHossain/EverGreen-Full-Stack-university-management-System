@@ -1,11 +1,11 @@
 import express from 'express';
+import auth from '../../middleware/auth';
 import validateRequest from '../../middleware/validate.Request';
+import { AdminValidations } from '../Admin/admin.validation';
 import { FacultyValidations } from '../Faculty/faculty.validation';
 import { StudentValidation } from '../student/student.validation';
-import { UserController } from './user.controller';
-import { AdminValidations } from '../Admin/admin.validation';
-import auth from '../../middleware/auth';
 import { USER_ROLE } from './user.constant';
+import { UserController } from './user.controller';
 const router = express.Router();
 
 router.post(
@@ -16,6 +16,7 @@ router.post(
 );
 router.post(
   '/create-faculty',
+  auth(USER_ROLE.admin),
   validateRequest(FacultyValidations.createFacultyValidationSchema),
   UserController.createFaculty,
 );

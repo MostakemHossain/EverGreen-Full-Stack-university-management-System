@@ -18,6 +18,9 @@ const userSchema = new Schema<TUser>(
       type: Boolean,
       default: true,
     },
+    passwordChangeAt: {
+      type: Date,
+    },
     role: {
       type: String,
       enum: ['admin', 'student', 'faculty'],
@@ -49,4 +52,4 @@ userSchema.post('save', async function (doc, next) {
   next();
 });
 
-export const User = model('User', userSchema);
+export const User = model<TUser>('User', userSchema);
