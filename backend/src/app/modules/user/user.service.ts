@@ -5,15 +5,19 @@ import config from '../../config';
 import AppError from '../../utils/AppError';
 import { AcademicSemester } from '../AcademicSemester/academicSemester.model';
 import { AcademicDepartment } from '../AcademinDepartment/academicDepartment.model';
+import { TAdmin } from '../Admin/admin.interface';
+import { Admin } from '../Admin/admin.model';
 import { TFaculty } from '../Faculty/faculty.interface';
 import { Faculty } from '../Faculty/faculty.model';
 import { TStudent } from '../student/student.interface';
 import { Student } from '../student/student.model';
 import { TUser } from './user.interface';
 import { User } from './user.model';
-import { generateAdminId, generateFacultyId, generateStudentId } from './user.utils';
-import { Admin } from '../Admin/admin.model';
-import { TAdmin } from '../Admin/admin.interface';
+import {
+  generateAdminId,
+  generateFacultyId,
+  generateStudentId,
+} from './user.utils';
 
 const createStudentIntoDB = async (password: string, payload: TStudent) => {
   // create new user object
@@ -74,7 +78,7 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
   if (!academicDepartment) {
     throw new AppError(
       httpStatus.NOT_FOUND,
-      'Academic Department is now Found',
+      'Academic Department is not Found',
     );
   }
   const session = await mongoose.startSession();
