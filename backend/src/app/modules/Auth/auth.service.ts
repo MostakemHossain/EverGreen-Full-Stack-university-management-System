@@ -3,6 +3,7 @@ import httpStatus from 'http-status';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../../config';
 import AppError from '../../utils/AppError';
+import { sendEmail } from '../../utils/sendEmail';
 import { User } from '../user/user.model';
 import { TLoginUser } from './auth.interface';
 import { createToken } from './auth.utils';
@@ -145,9 +146,76 @@ const refreshToken = async (token: string) => {
     accessToken,
   };
 };
+const forgetPassword = async (id: string) => {
+  const user = await User.findOne({
+    id,
+    isDeleted: false,
+    status: 'in-progress',
+  });
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'The user is Not Found');
+  }
+  // create token and sent to the users
+  const jwtPayload = {
+    userId: user.id,
+    role: user.role,
+  };
+  const resetToken = createToken(
+    jwtPayload,
+    config.jwt_access_serect as string,
+    '10m',
+  );
+  const resetLink = `${config.reset_password_ui_link}?id=${user.id}&token=${resetToken}`;
+  sendEmail(user.email, resetLink);
+};
+
+const resetPassword = async (
+  payload: {
+    id: string;
+    newPassword: string;
+  },
+  token: string,
+) => {
+  const { id } = payload;
+  const user = await User.findOne({
+    id,
+    isDeleted: false,
+    status: 'in-progress',
+  });
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'The user is Not Found');
+  }
+  // check the token is valid
+  const decoded = jwt.verify(
+    token,
+    config.jwt_access_serect as string,
+  ) as JwtPayload;
+
+  if (decoded.userId !== id) {
+    throw new AppError(httpStatus.FORBIDDEN, 'You are forbidden');
+  }
+
+   // hashed password
+   const hashedPassword = await bcrypt.hash(
+    payload?.newPassword,
+    Number(config.bcrypt_salt_round),
+  );
+
+  const result = await User.findOneAndUpdate(
+    {
+      id: payload.id,
+    },
+    {
+      password: hashedPassword,
+    },
+  ).select('-password');
+  return result;
+};
 
 export const AuthServices = {
   loginUser,
   changePassword,
   refreshToken,
+  forgetPassword,
+  resetPassword,
 };

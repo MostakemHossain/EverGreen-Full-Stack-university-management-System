@@ -13,5 +13,6 @@ export default {
   jwt_refresh_serect:process.env.JWT_REFRESH_SERECT,
   jwt_access_serect_expires_in:process.env.JWT_ACCESS_SERECT_EXPIRES_IN,
   jwt_refresh_serect_expires_in:process.env.JWT_REFRESH_SERECT_EXPIRES_IN,
+  reset_password_ui_link:process.env.RESET_PASSWORD_UI_LINK
 
 };
