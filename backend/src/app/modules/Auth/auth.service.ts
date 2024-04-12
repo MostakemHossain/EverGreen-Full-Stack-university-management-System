@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import httpStatus from 'http-status';
-import { JwtPayload } from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../../config';
 import AppError from '../../utils/AppError';
 import { User } from '../user/user.model';
@@ -101,7 +101,53 @@ const changePassword = async (
   return result;
 };
 
+const refreshToken = async (token: string) => {
+  if (!token) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorizad');
+  }
+  // check the token is valid
+  const decoded = jwt.verify(
+    token,
+    config.jwt_refresh_serect as string,
+  ) as JwtPayload;
+  const { userId, iat } = decoded;
+
+  // check the user is exists
+  const isUserExists = await User.findOne({ id: userId });
+
+  if (!isUserExists) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User is not Found');
+  }
+  // check is the user is already deleted
+  if (isUserExists?.isDeleted || isUserExists.status === 'blocked') {
+    throw new AppError(httpStatus.NOT_FOUND, 'User is not Found');
+  }
+  const passwordChangeAt = isUserExists?.passwordChangeAt as
+    | string
+    | number
+    | Date;
+  const passwordChangedAt = new Date(passwordChangeAt).getTime() / 1000;
+  if (passwordChangedAt > Number(iat)) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorizad');
+  }
+
+  // create token and sent to the users
+  const jwtPayload = {
+    userId: isUserExists.id,
+    role: isUserExists.role,
+  };
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_serect as string,
+    config.jwt_access_serect_expires_in as string,
+  );
+  return {
+    accessToken,
+  };
+};
+
 export const AuthServices = {
   loginUser,
   changePassword,
+  refreshToken,
 };
