@@ -27,7 +27,7 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
   user.password = password || (config.default_password as string);
   // set role
   user.role = 'student';
-  user.email=payload.email;
+  user.email = payload.email;
 
   // find academic semester
   const admissionSemester = await AcademicSemester.findById(
@@ -71,7 +71,7 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
 
   user.password = password || config.default_password;
   user.role = 'faculty';
-  user.email=payload.email;
+  user.email = payload.email;
 
   // academic department
   const academicDepartment = await AcademicDepartment.findById(
@@ -118,7 +118,7 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
 
   //set student role
   userData.role = 'admin';
-  userData.email=payload.email;
+  userData.email = payload.email;
 
   const session = await mongoose.startSession();
 
@@ -155,8 +155,42 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
     throw new Error(err);
   }
 };
+
+const getMe = async (userId: string, role: string) => {
+  let result = null;
+  if (role === 'student') {
+    result = await Student.findOne({ id: userId });
+  } else if (role === 'admin') {
+    result = await Admin.findOne({ id: userId }).populate({
+      path: 'user',
+      select: '-password',
+    });
+  } else if (role === 'faculty') {
+    result = await Faculty.findOne({ id: userId });
+  }
+
+  return result;
+};
+
+const changeStatus = async (
+  id: string,
+  payload: {
+    status: string;
+  },
+) => {
+  const user = await User.findById(id);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+  const result = await User.findByIdAndUpdate(id, payload, {
+    new: true,
+  }).select('-password');
+  return result;
+};
 export const UserServices = {
   createStudentIntoDB,
   createFacultyIntoDB,
   createAdminIntoDB,
+  getMe,
+  changeStatus,
 };

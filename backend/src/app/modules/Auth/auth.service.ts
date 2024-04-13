@@ -6,7 +6,7 @@ import AppError from '../../utils/AppError';
 import { sendEmail } from '../../utils/sendEmail';
 import { User } from '../user/user.model';
 import { TLoginUser } from './auth.interface';
-import { createToken } from './auth.utils';
+import { createToken, verifyToken } from './auth.utils';
 
 const loginUser = async (payload: TLoginUser) => {
   // check the user is exists
@@ -107,10 +107,7 @@ const refreshToken = async (token: string) => {
     throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorizad');
   }
   // check the token is valid
-  const decoded = jwt.verify(
-    token,
-    config.jwt_refresh_serect as string,
-  ) as JwtPayload;
+  const decoded = verifyToken(token, config.jwt_refresh_serect as string);
   const { userId, iat } = decoded;
 
   // check the user is exists
@@ -195,8 +192,8 @@ const resetPassword = async (
     throw new AppError(httpStatus.FORBIDDEN, 'You are forbidden');
   }
 
-   // hashed password
-   const hashedPassword = await bcrypt.hash(
+  // hashed password
+  const hashedPassword = await bcrypt.hash(
     payload?.newPassword,
     Number(config.bcrypt_salt_round),
   );
