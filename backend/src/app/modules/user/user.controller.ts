@@ -8,7 +8,11 @@ import { UserServices } from './user.service';
 const createStudent = catchAsync(async (req: Request, res: Response) => {
   const { password, student } = req.body;
 
-  const result = await UserServices.createStudentIntoDB(password, student);
+  const result = await UserServices.createStudentIntoDB(
+    req.file,
+    password,
+    student,
+  );
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
@@ -19,7 +23,11 @@ const createStudent = catchAsync(async (req: Request, res: Response) => {
 const createFaculty = catchAsync(async (req: Request, res: Response) => {
   const { password, faculty } = req.body;
 
-  const result = await UserServices.createFacultyIntoDB(password, faculty);
+  const result = await UserServices.createFacultyIntoDB(
+    req.file,
+    password,
+    faculty,
+  );
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
@@ -30,7 +38,11 @@ const createFaculty = catchAsync(async (req: Request, res: Response) => {
 const createAdmin = catchAsync(async (req, res) => {
   const { password, admin: adminData } = req.body;
 
-  const result = await UserServices.createAdminIntoDB(password, adminData);
+  const result = await UserServices.createAdminIntoDB(
+    req.file,
+    password,
+    adminData,
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
@@ -51,7 +63,6 @@ const getMe = catchAsync(async (req, res) => {
   });
 });
 const changeStatus = catchAsync(async (req, res) => {
-  
   const result = await UserServices.changeStatus(req.params.id, req.body);
 
   sendResponse(res, {
@@ -66,5 +77,5 @@ export const UserController = {
   createFaculty,
   createAdmin,
   getMe,
-  changeStatus
+  changeStatus,
 };
