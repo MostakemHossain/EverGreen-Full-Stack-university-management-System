@@ -2,14 +2,15 @@ import express from 'express';
 import { AcademicFacultyRoutes } from '../modules/AcademicFaculty/academicFaculty.routes';
 import { AcademicSemesterRoutes } from '../modules/AcademicSemester/academicSemester.routes';
 import { AcademicDepartmentRoutes } from '../modules/AcademinDepartment/academicDepartment.routes';
+import { AdminRoutes } from '../modules/Admin/admin.routes';
 import { AuthRoutes } from '../modules/Auth/auth.routes';
+import { EnrolledCourseRoutes } from '../modules/EnrolledCourse/enrolledCourse.routes';
 import { facultyRoutes } from '../modules/Faculty/faculty.routes';
 import { OfferedCourseRoutes } from '../modules/OfferedCourse/offeredCourse.routes';
 import { semesterRegistrationRoutes } from '../modules/SemesterRegistration/semesterRegistration.routes';
 import { CourseRoutes } from '../modules/course/course.routes';
 import { StudentRoutes } from '../modules/student/student.route';
 import { UserRoutes } from '../modules/user/user.routes';
-import { AdminRoutes } from '../modules/Admin/admin.routes';
 const router = express.Router();
 
 const moduleRoutes = [
@@ -56,6 +57,10 @@ const moduleRoutes = [
   {
     path: '/admins',
     route: AdminRoutes,
+  },
+  {
+    path: '/enrolled-course',
+    route: EnrolledCourseRoutes,
   },
 ];
 
