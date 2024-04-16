@@ -6,7 +6,6 @@ export const Grade = [
   'B-',
   'B+',
   'C',
-  'C-',
   'C+',
   'D',
   'F',

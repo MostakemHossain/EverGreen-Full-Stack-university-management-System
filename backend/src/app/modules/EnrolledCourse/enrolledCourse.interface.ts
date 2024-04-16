@@ -7,7 +7,6 @@ export type TGrade =
   | 'B-'
   | 'B+'
   | 'C'
-  | 'C-'
   | 'C+'
   | 'D'
   | 'F'

@@ -4,13 +4,13 @@ import { TCourseMarks, TEnrolledCourse } from './enrolledCourse.interface';
 
 const courseMarksSchema = new Schema<TCourseMarks>(
   {
-    classTest1: { type: Number, default: 0 },
-    classTest2: { type: Number, default: 0 },
-    classTest3: { type: Number, default: 0 },
-    assignment: { type: Number, default: 0 },
-    presentation: { type: Number, default: 0 },
-    midTerm: { type: Number, default: 0 },
-    finalTerm: { type: Number, default: 0 },
+    classTest1: { type: Number, default: 0,min:0,max:15 },
+    classTest2: { type: Number, default: 0 ,min:0,max:15 },
+    classTest3: { type: Number, default: 0 ,min:0,max:15 },
+    assignment: { type: Number, default: 0,min:0,max:5  },
+    presentation: { type: Number, default: 0 ,min:0,max:8 },
+    midTerm: { type: Number, default: 0,min:0,max:25  },
+    finalTerm: { type: Number, default: 0,min:0,max:40  },
   },
   {
     _id: false,
