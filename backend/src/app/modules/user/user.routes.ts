@@ -4,10 +4,10 @@ import validateRequest from '../../middleware/validate.Request';
 import { upload } from '../../utils/sendImageToCloudinary';
 import { AdminValidations } from '../Admin/admin.validation';
 import { FacultyValidations } from '../Faculty/faculty.validation';
+import { StudentValidation } from '../student/student.validation';
 import { USER_ROLE } from './user.constant';
 import { UserController } from './user.controller';
 import { UserValidation } from './user.validation';
-import { StudentValidation } from '../student/student.validation';
 const router = express.Router();
 
 router.post(

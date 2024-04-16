@@ -65,6 +65,7 @@ const enrolledCourseSchema = new Schema<TEnrolledCourse>(
     },
     courseMarks: {
       type: courseMarksSchema,
+      default: {},
     },
     grade: {
       type: String,
@@ -88,7 +89,7 @@ const enrolledCourseSchema = new Schema<TEnrolledCourse>(
   },
 );
 
-export const enrolledCourse = model<TEnrolledCourse>(
+export const EnrolledCourse = model<TEnrolledCourse>(
   'EnrolledCourse',
   enrolledCourseSchema,
 );
