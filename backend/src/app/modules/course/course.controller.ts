@@ -21,7 +21,8 @@ const getAllCourses = catchAsync(async (req, res) => {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Course are retrieved successfully',
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 
@@ -50,7 +51,7 @@ const deleteCourse = catchAsync(async (req, res) => {
 });
 const updateCourse = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await CourseServices.updateCourse(id,req.body);
+  const result = await CourseServices.updateCourse(id, req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -59,9 +60,12 @@ const updateCourse = catchAsync(async (req, res) => {
     data: result,
   });
 });
-const assignFacultiesWithCourse= catchAsync(async (req, res) => {
+const assignFacultiesWithCourse = catchAsync(async (req, res) => {
   const { courseId } = req.params;
-  const result = await CourseServices.assignFacultiesWithCourse(courseId,req.body.faculties);
+  const result = await CourseServices.assignFacultiesWithCourse(
+    courseId,
+    req.body.faculties,
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
@@ -70,7 +74,7 @@ const assignFacultiesWithCourse= catchAsync(async (req, res) => {
     data: result,
   });
 });
-const getFacultiesWithCourse= catchAsync(async (req, res) => {
+const getFacultiesWithCourse = catchAsync(async (req, res) => {
   const { courseId } = req.params;
   const result = await CourseServices.getFacultiesWithCourseFromDB(courseId);
 
@@ -81,9 +85,12 @@ const getFacultiesWithCourse= catchAsync(async (req, res) => {
     data: result,
   });
 });
-const removeFacultiesWithCourse= catchAsync(async (req, res) => {
+const removeFacultiesWithCourse = catchAsync(async (req, res) => {
   const { courseId } = req.params;
-  const result = await CourseServices.removeFacultiesWithCourse(courseId,req.body.faculties);
+  const result = await CourseServices.removeFacultiesWithCourse(
+    courseId,
+    req.body.faculties,
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
@@ -101,5 +108,5 @@ export const CourseControllers = {
   updateCourse,
   assignFacultiesWithCourse,
   removeFacultiesWithCourse,
-  getFacultiesWithCourse
+  getFacultiesWithCourse,
 };
