@@ -7,7 +7,7 @@ let server: Server;
 async function main() {
   try {
     await mongoose.connect(config.db_url as string);
-    seedsSuperAdmin();
+    await seedsSuperAdmin();
     server = app.listen(config.port, () => {
       console.log(`App listening on port ${config.port}`);
     });

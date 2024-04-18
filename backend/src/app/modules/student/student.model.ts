@@ -150,10 +150,14 @@ const studentSchema = new Schema<TStudent, TStudentModel>(
       type: Schema.Types.ObjectId,
       ref: 'AcademicDepartment',
     },
+    academicFaculty: {
+      type: Schema.Types.ObjectId,
+      ref: 'AcademicFaculty',
+    },
 
     profileImage: {
       type: String,
-      required: [true, 'Profile image is required'],
+      default: '',
       trim: true,
     },
     isDeleted: {
