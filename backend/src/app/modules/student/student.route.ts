@@ -11,12 +11,21 @@ router.get(
   auth(USER_ROLE.admin, USER_ROLE.faculty),
   StudentController.getAllStudents,
 );
-router.get('/:studentId', StudentController.getSingleStudent);
+router.get(
+  '/:studentId',
+  auth(USER_ROLE.admin, USER_ROLE.faculty, USER_ROLE.faculty),
+  StudentController.getSingleStudent,
+);
 router.patch(
   '/:studentId',
+  auth(USER_ROLE.admin, USER_ROLE.faculty),
   validateRequest(StudentValidation.updateStudentValidationSchema),
   StudentController.updateStudent,
 );
-router.delete('/:studentId', StudentController.deleteStudent);
+router.delete(
+  '/:studentId',
+  auth(USER_ROLE.admin, USER_ROLE.faculty),
+  StudentController.deleteStudent,
+);
 
 export const StudentRoutes = router;

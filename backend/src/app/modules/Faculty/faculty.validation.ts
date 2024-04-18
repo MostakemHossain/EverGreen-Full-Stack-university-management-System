@@ -83,6 +83,7 @@ export const updateFacultyValidationSchema = z.object({
       permanentAddress: z.string().optional(),
       profileImg: z.string().optional(),
       academicDepartment: z.string().optional(),
+      academicFaculty: z.string().optional(),
     }),
   }),
 });

@@ -35,7 +35,7 @@ router.post(
 
 router.post(
   '/create-admin',
-  auth(USER_ROLE.superAdmin),
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
   upload.single('file'),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = JSON.parse(req.body.data);
@@ -44,10 +44,10 @@ router.post(
   validateRequest(AdminValidations.createAdminValidationSchema),
   UserController.createAdmin,
 );
-router.post('/me', auth('student', 'faculty', 'admin'), UserController.getMe);
+router.post('/me', auth('student', 'faculty', 'admin','superAdmin'), UserController.getMe);
 router.post(
   '/change-status/:id',
-  auth('admin'),
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
   validateRequest(UserValidation.changeStatusValidationSchema),
   UserController.changeStatus,
 );

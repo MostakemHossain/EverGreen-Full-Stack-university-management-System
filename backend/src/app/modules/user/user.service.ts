@@ -113,6 +113,7 @@ const createFacultyIntoDB = async (
       'Academic Department is not Found',
     );
   }
+  payload.academicFaculty = academicDepartment.academicFaculty;
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
